@@ -1,0 +1,124 @@
+section .data
+    msg db 'Torre de Hanoi: ', 10, 0
+    msg_len equ $ - msg - 1
+
+    msg_mov db 'Mova disco '
+    num db ' '
+        db ' da Torre '
+    origem_char db ' '
+                db ' para a Torre '
+    destino_char db ' '
+                db 10, 0
+    msg_mov_len equ $ - msg_mov
+
+section .bss
+    n resb 2
+
+section .text
+    global _start
+
+    hanoi: ; função 
+    cmp rdi, 0 ; se n == 0
+    je .fim_hanoi
+
+    push rdi ; salva n na pilha
+    push rsi ; salva origem
+    push rdx ; salva destino
+    push rcx ; salva auxiliar
+
+    dec rdi ; n-1
+
+    ;trocar destino e auxiliar (rdx e rcx)
+    mov r8, rdx ; usa registrador auxiliar
+    mov rdx, rcx
+    mov rcx, r8
+    call hanoi
+
+
+    ;inicar restauração da pilha
+    pop rcx
+    pop rdx
+    pop rsi
+    pop rdi
+
+    movzx eax, dil
+    add al, '0' ; converte o numero para caractere ascii
+    mov [num], al ; impressao de num
+
+    mov [origem_char], sil ;move caractere de rsi para impressao
+    mov [destino_char], dl ;move caractere de rdx para a impressao
+
+    push rdi
+    push rsi
+    push rdx
+    push rcx
+
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg_mov
+    mov rdx, msg_mov_len
+    syscall
+
+    pop rcx
+    pop rdx
+    pop rsi
+    pop rdi
+
+
+    push rdi ; salva n na pilha
+    push rsi ; salva origem
+    push rdx ; salva destino
+    push rcx ; salva auxiliar
+
+    dec rdi ; n-1
+
+    ;trocar inicial e auxiliar
+    mov r8, rsi
+    mov rsi, rcx
+    mov rcx, r8
+
+    call hanoi ;chama hanoi dnv
+
+    ;inicar restauração da pilha
+    pop rcx
+    pop rdx
+    pop rsi
+    pop rdi
+    
+
+.fim_hanoi:
+    ret
+
+
+_start:
+
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg
+    mov rdx, msg_len
+    syscall
+
+    ; leitura do teclado
+    mov rax, 0
+    mov rdi, 0
+    mov rsi, n
+    mov rdx, 2
+    syscall
+
+    mov al, [n]
+    sub al, '0'
+    movzx rdi, al
+
+    mov rsi, 'A'
+    mov rdx, 'C'
+    mov rcx, 'B'
+
+    call hanoi
+
+
+    
+    ; saida
+    mov rax, 60
+    mov rdi, 0
+    syscall
+    
