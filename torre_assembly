@@ -1,5 +1,5 @@
 section .data
-    msg db 'Torre de Hanoi: ', 10, 0
+    msg db 'Digite o numero de discos da Torre de Hanoi: ', 10, 0
     msg_len equ $ - msg - 1
 
     msg_mov db 'Mova disco '
@@ -9,10 +9,11 @@ section .data
                 db ' para a Torre '
     destino_char db ' '
                 db 10, 0
-    msg_mov_len equ $ - msg_mov
+    msg_mov_len equ $ - msg_mov - 1
 
-section .bss
-    n resb 2
+
+    n db '0', 10
+
 
 section .text
     global _start
